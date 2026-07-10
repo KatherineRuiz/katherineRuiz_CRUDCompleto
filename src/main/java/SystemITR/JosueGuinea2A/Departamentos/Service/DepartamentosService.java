@@ -7,6 +7,9 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 public class DepartamentosService {
@@ -27,7 +30,7 @@ public class DepartamentosService {
             return convertirADTO(entitySave);
         }catch (Exception e){
             log.error("Error al ingresar la información del departamento" + e.getMessage());
-            throw new RuntimeException("Error al registrar el departamento");
+            return null;
         }
     }
 
@@ -45,5 +48,14 @@ public class DepartamentosService {
         objDTO.setAbreviatura(entity.getAbreviatura());
         objDTO.setUbicacion(entity.getUbicacion());
         return objDTO;
+    }
+
+    public List<DepartamentoDTO> obtenerTodo() {
+        //Aquí el retorno es una lista de DepartamentoDTO, pero lo que se recivbe el un entity ya que viene de la base,
+        //asi que hay que convertirlo a DTO
+        List<DepartamentosEntity> data = repo.findAll();
+        return data.stream().map(this::convertirADTO).collect(Collectors.toList());
+        //Aqui el .map le da los atributos que vienen del entity, a los atributos del DTo, ej. id(entity) = id(dto)
+        //Por eso es necesari que se llamen igual
     }
 }
